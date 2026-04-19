@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using CompactSerializer;
+using CompactSerializer.Demo;
 
 var jsonOptions = new JsonSerializerOptions
 {
