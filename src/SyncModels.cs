@@ -1,4 +1,4 @@
-namespace SerializerDemo;
+namespace CompactSerializer;
 
 public enum SyncPriority
 {

@@ -1,4 +1,4 @@
-namespace SerializerDemo;
+namespace CompactSerializer;
 
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class SyncOrderAttribute : Attribute

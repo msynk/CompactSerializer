@@ -1,4 +1,4 @@
-namespace SerializerDemo;
+namespace CompactSerializer;
 
 public static class SampleDataFactory
 {

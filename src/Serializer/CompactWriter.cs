@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SerializerDemo;
+namespace CompactSerializer;
 
 internal sealed class CompactWriter
 {
