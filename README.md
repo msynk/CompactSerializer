@@ -14,6 +14,7 @@ The companion demo project compares payload size and rough serialize/deserialize
 |------|---------|
 | `src/CompactSerializer/` | Library: `CompactBinarySerializer`, `SyncOrderAttribute`, readers/writers |
 | `src/CompactSerializer.Demo/` | Console app: sample models, benchmark vs JSON and MessagePack |
+| `src/CompactSerializer.Tests/` | xUnit test project: functional, error-path, payload-size, and performance-smoke coverage |
 | `src/CompactSerializer.sln` | Solution |
 
 ## Quick start
@@ -80,6 +81,20 @@ The demo prints JSON vs CompactSerializer vs MessagePack byte counts, checks Com
 ```bash
 dotnet build src/CompactSerializer.sln
 ```
+
+## Running tests
+
+```bash
+dotnet test src/CompactSerializer.sln
+```
+
+The test project includes broad serializer coverage:
+
+- Round-trip correctness for primitives, nested objects, arrays, and lists
+- Nullability and guardrail behavior (null roots, empty/truncated payloads)
+- Contract behavior (`SyncOrder` ordering and constructor requirements)
+- Payload-size sanity check against JSON for a representative model
+- Performance smoke checks for serialize/deserialize loops
 
 ## Limitations and stability
 
