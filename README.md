@@ -2,7 +2,7 @@
 
 A small, schema-aware binary serializer for .NET. It trades JSON’s self-describing text for a compact layout: fixed field order, length-prefixed strings and byte arrays, and variable-length integer encoding where it helps. The result is typically smaller payloads and less parsing overhead than `System.Text.Json` for the same POCO graphs—at the cost of a custom, non-human-readable format.
 
-The companion demo project compares payload size and rough serialize/deserialize throughput against JSON on a large synthetic model.
+The companion demo project compares payload size and rough serialize/deserialize throughput across CompactSerializer, `System.Text.Json`, and MessagePack on a large synthetic model.
 
 ## Requirements
 
@@ -13,7 +13,7 @@ The companion demo project compares payload size and rough serialize/deserialize
 | Path | Purpose |
 |------|---------|
 | `src/CompactSerializer/` | Library: `CompactBinarySerializer`, `SyncOrderAttribute`, readers/writers |
-| `src/CompactSerializer.Demo/` | Console app: sample models, benchmark vs JSON |
+| `src/CompactSerializer.Demo/` | Console app: sample models, benchmark vs JSON and MessagePack |
 | `src/CompactSerializer.sln` | Solution |
 
 ## Quick start
@@ -73,7 +73,7 @@ From the repository root:
 dotnet run --project src/CompactSerializer.Demo/CompactSerializer.Demo.csproj
 ```
 
-The demo prints JSON vs compact byte counts, checks a compact round-trip, then runs a simple multi-round benchmark (not a substitute for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet), but useful for a quick sanity check).
+The demo prints JSON vs CompactSerializer vs MessagePack byte counts, checks CompactSerializer and MessagePack round-trips, then runs a simple multi-round benchmark for serialize/deserialize performance across all three serializers (not a substitute for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet), but useful for a quick sanity check).
 
 ## Building
 
