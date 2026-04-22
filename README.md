@@ -96,6 +96,21 @@ The test project includes broad serializer coverage:
 - Payload-size sanity check against JSON for a representative model
 - Performance smoke checks for serialize/deserialize loops
 
+## NuGet packaging
+
+Create NuGet package artifacts:
+
+```bash
+dotnet pack src/CompactSerializer/CompactSerializer.csproj -c Release -o artifacts
+```
+
+Publish to NuGet.org (replace with your API key):
+
+```bash
+dotnet nuget push artifacts/CompactSerializer.1.0.0.nupkg --api-key <NUGET_API_KEY> --source https://api.nuget.org/v3/index.json
+dotnet nuget push artifacts/CompactSerializer.1.0.0.snupkg --api-key <NUGET_API_KEY> --source https://api.nuget.org/v3/index.json
+```
+
 ## Limitations and stability
 
 - Format versioning is not built in; changing property order, types, or serializer behavior breaks interoperability with old payloads.
