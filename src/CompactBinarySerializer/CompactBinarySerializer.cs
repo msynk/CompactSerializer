@@ -375,7 +375,7 @@ public static class CompactBinarySerializer
             .Select(p => new
             {
                 Property = p,
-                Order = p.GetCustomAttribute<SyncOrderAttribute>()?.Order,
+                Order = p.GetCustomAttribute<CompactIndexAttribute>()?.Index,
                 MetadataToken = p.MetadataToken
             })
             .OrderBy(p => p.Order ?? int.MaxValue)

@@ -35,17 +35,17 @@ Root values passed to `Serialize` must not be null. For `Deserialize<T>`, the pa
 
 ## Modeling rules
 
-Property order: only public instance properties with both a getter and setter participate. Order is determined by `[SyncOrder(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
+Property order: only public instance properties with both a getter and setter participate. Order is determined by `[CompactIndex(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
 
 ```csharp
 using CompactBinarySerializer;
 
 public sealed class Example
 {
-    [SyncOrder(0)]
+    [CompactIndex(0)]
     public int Id { get; set; }
 
-    [SyncOrder(1)]
+    [CompactIndex(1)]
     public string Name { get; set; } = string.Empty;
 }
 ```
@@ -104,7 +104,7 @@ The test project includes:
 
 - Round-trip correctness for primitives, nested objects, arrays, and lists
 - Nullability and guardrail behavior (null roots, empty/truncated payloads)
-- Contract behavior (`SyncOrder` ordering and constructor requirements)
+- Contract behavior (`CompactIndex` ordering and constructor requirements)
 - Payload-size sanity check against JSON for a representative model
 - Performance smoke checks for serialize/deserialize loops
 

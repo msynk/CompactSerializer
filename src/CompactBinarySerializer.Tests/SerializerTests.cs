@@ -288,109 +288,109 @@ public sealed class SerializerTests
 
     private sealed class TestEnvelope
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public int Id { get; set; }
 
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public string Name { get; set; } = string.Empty;
 
-        [SyncOrder(2)]
+        [CompactIndex(2)]
         public TestPriority Priority { get; set; }
 
-        [SyncOrder(3)]
+        [CompactIndex(3)]
         public DateTime CreatedAtUtc { get; set; }
 
-        [SyncOrder(4)]
+        [CompactIndex(4)]
         public Guid CorrelationId { get; set; }
 
-        [SyncOrder(5)]
+        [CompactIndex(5)]
         public int? OptionalCount { get; set; }
 
-        [SyncOrder(6)]
+        [CompactIndex(6)]
         public List<string> Tags { get; set; } = [];
 
-        [SyncOrder(7)]
+        [CompactIndex(7)]
         public int[] Readings { get; set; } = [];
 
-        [SyncOrder(8)]
+        [CompactIndex(8)]
         public byte[] Payload { get; set; } = [];
 
-        [SyncOrder(9)]
+        [CompactIndex(9)]
         public TestChild? Child { get; set; }
     }
 
     private sealed class TestChild
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public string Label { get; set; } = string.Empty;
 
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public bool IsActive { get; set; }
     }
 
     private sealed class PrimitiveEnvelope
     {
-        [SyncOrder(0)] public bool BoolValue { get; set; }
-        [SyncOrder(1)] public byte ByteValue { get; set; }
-        [SyncOrder(2)] public short ShortValue { get; set; }
-        [SyncOrder(3)] public int IntValue { get; set; }
-        [SyncOrder(4)] public long LongValue { get; set; }
-        [SyncOrder(5)] public ushort UShortValue { get; set; }
-        [SyncOrder(6)] public uint UIntValue { get; set; }
-        [SyncOrder(7)] public ulong ULongValue { get; set; }
-        [SyncOrder(8)] public float FloatValue { get; set; }
-        [SyncOrder(9)] public double DoubleValue { get; set; }
-        [SyncOrder(10)] public decimal DecimalValue { get; set; }
-        [SyncOrder(11)] public DateTime DateTimeValue { get; set; }
-        [SyncOrder(12)] public Guid GuidValue { get; set; }
-        [SyncOrder(13)] public TestPriority EnumValue { get; set; }
+        [CompactIndex(0)] public bool BoolValue { get; set; }
+        [CompactIndex(1)] public byte ByteValue { get; set; }
+        [CompactIndex(2)] public short ShortValue { get; set; }
+        [CompactIndex(3)] public int IntValue { get; set; }
+        [CompactIndex(4)] public long LongValue { get; set; }
+        [CompactIndex(5)] public ushort UShortValue { get; set; }
+        [CompactIndex(6)] public uint UIntValue { get; set; }
+        [CompactIndex(7)] public ulong ULongValue { get; set; }
+        [CompactIndex(8)] public float FloatValue { get; set; }
+        [CompactIndex(9)] public double DoubleValue { get; set; }
+        [CompactIndex(10)] public decimal DecimalValue { get; set; }
+        [CompactIndex(11)] public DateTime DateTimeValue { get; set; }
+        [CompactIndex(12)] public Guid GuidValue { get; set; }
+        [CompactIndex(13)] public TestPriority EnumValue { get; set; }
     }
 
     private sealed class CollectionEnvelope
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public List<TestChild> Children { get; set; } = [];
 
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public TestChild[] ChildArray { get; set; } = [];
     }
 
     private sealed class OrderedShapeA
     {
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public string Name { get; set; } = string.Empty;
 
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public int Count { get; set; }
     }
 
     private sealed class OrderedShapeB
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public int Count { get; set; }
 
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public string Name { get; set; } = string.Empty;
     }
 
     private sealed class NoParameterlessCtorEnvelope
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public NoParameterlessCtorChild Child { get; set; } = new("x");
 
-        [SyncOrder(1)]
+        [CompactIndex(1)]
         public string Name { get; set; } = string.Empty;
     }
 
     private sealed class NoParameterlessCtorChild(string value)
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public string Value { get; set; } = value;
     }
 
     private sealed class UnsupportedCollectionEnvelope
     {
-        [SyncOrder(0)]
+        [CompactIndex(0)]
         public IEnumerable<int> Values { get; set; } = [];
     }
 }

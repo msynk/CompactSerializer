@@ -7,7 +7,7 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>CompactBinarySerializer</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Saleh Yusefnejad</Authors>
     <Company>msynk</Company>
     <Description>Schema-aware binary serializer for .NET focused on compact payloads and fast POCO serialization.</Description>
