@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CompactSerializer;
+namespace CompactBinarySerializer;
 
 public static class CompactBinarySerializer
 {

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace CompactSerializer;
+namespace CompactBinarySerializer;
 
 internal sealed class CompactReader
 {

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>CompactSerializer</PackageId>
+    <PackageId>CompactBinarySerializer</PackageId>
     <Version>0.1.0</Version>
     <Authors>Saleh Yusefnejad</Authors>
     <Company>msynk</Company>
@@ -14,7 +14,7 @@
     <PackageTags>serializer;binary;compact;performance;dotnet</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/msynk/CompactSerializer</RepositoryUrl>
+    <RepositoryUrl>https://github.com/msynk/CompactBinarySerializer</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using CompactSerializer;
+using static CompactBinarySerializer.CompactBinarySerializer;
 
-namespace CompactSerializer.Tests;
+namespace CompactBinarySerializer.Tests;
 
 public sealed class SerializerTests
 {
@@ -12,8 +12,8 @@ public sealed class SerializerTests
     {
         var sample = CreateSampleEnvelope();
 
-        var bytes = CompactBinarySerializer.Serialize(sample);
-        var restored = CompactBinarySerializer.Deserialize<TestEnvelope>(bytes);
+        var bytes = Serialize(sample);
+        var restored = Deserialize<TestEnvelope>(bytes);
 
         AssertEqual(sample, restored);
     }
@@ -23,8 +23,8 @@ public sealed class SerializerTests
     {
         var sample = CreateSampleEnvelope();
 
-        var first = CompactBinarySerializer.Serialize(sample);
-        var second = CompactBinarySerializer.Serialize(sample);
+        var first = Serialize(sample);
+        var second = Serialize(sample);
 
         Assert.Equal(first, second);
     }
@@ -32,14 +32,14 @@ public sealed class SerializerTests
     [Fact]
     public void Serialize_NullRoot_ThrowsArgumentNullException()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => CompactBinarySerializer.Serialize<string>(null!));
+        var exception = Assert.Throws<ArgumentNullException>(() => Serialize<string>(null!));
         Assert.Equal("value", exception.ParamName);
     }
 
     [Fact]
     public void Deserialize_EmptyPayload_ThrowsArgumentException()
     {
-        var exception = Assert.Throws<ArgumentException>(() => CompactBinarySerializer.Deserialize<TestEnvelope>([]));
+        var exception = Assert.Throws<ArgumentException>(() => Deserialize<TestEnvelope>([]));
         Assert.Equal("payload", exception.ParamName);
     }
 
@@ -48,7 +48,7 @@ public sealed class SerializerTests
     {
         var payloadForNullString = new byte[] { 0 };
 
-        var exception = Assert.Throws<InvalidOperationException>(() => CompactBinarySerializer.Deserialize<string>(payloadForNullString));
+        var exception = Assert.Throws<InvalidOperationException>(() => Deserialize<string>(payloadForNullString));
 
         Assert.Equal("Deserialization produced null for a non-nullable root type.", exception.Message);
     }
@@ -60,8 +60,8 @@ public sealed class SerializerTests
         sample.OptionalCount = null;
         sample.Child = null;
 
-        var bytes = CompactBinarySerializer.Serialize(sample);
-        var restored = CompactBinarySerializer.Deserialize<TestEnvelope>(bytes);
+        var bytes = Serialize(sample);
+        var restored = Deserialize<TestEnvelope>(bytes);
 
         Assert.Null(restored.OptionalCount);
         Assert.Null(restored.Child);
@@ -73,8 +73,8 @@ public sealed class SerializerTests
         var sample = CreateSampleEnvelope();
         sample.OptionalCount = 999_999;
 
-        var bytes = CompactBinarySerializer.Serialize(sample);
-        var restored = CompactBinarySerializer.Deserialize<TestEnvelope>(bytes);
+        var bytes = Serialize(sample);
+        var restored = Deserialize<TestEnvelope>(bytes);
 
         Assert.Equal(999_999, restored.OptionalCount);
     }
@@ -100,8 +100,8 @@ public sealed class SerializerTests
             EnumValue = TestPriority.High
         };
 
-        var bytes = CompactBinarySerializer.Serialize(sample);
-        var restored = CompactBinarySerializer.Deserialize<PrimitiveEnvelope>(bytes);
+        var bytes = Serialize(sample);
+        var restored = Deserialize<PrimitiveEnvelope>(bytes);
 
         Assert.Equal(sample.BoolValue, restored.BoolValue);
         Assert.Equal(sample.ByteValue, restored.ByteValue);
@@ -128,8 +128,8 @@ public sealed class SerializerTests
             ChildArray = [new TestChild { Label = "x", IsActive = true }, new TestChild { Label = "y", IsActive = true }]
         };
 
-        var bytes = CompactBinarySerializer.Serialize(sample);
-        var restored = CompactBinarySerializer.Deserialize<CollectionEnvelope>(bytes);
+        var bytes = Serialize(sample);
+        var restored = Deserialize<CollectionEnvelope>(bytes);
 
         Assert.Equal(sample.Children.Count, restored.Children.Count);
         Assert.Equal(sample.ChildArray.Length, restored.ChildArray.Length);
@@ -144,8 +144,8 @@ public sealed class SerializerTests
         var first = new OrderedShapeA { Name = "alpha", Count = 33 };
         var second = new OrderedShapeB { Name = "alpha", Count = 33 };
 
-        var bytesA = CompactBinarySerializer.Serialize(first);
-        var bytesB = CompactBinarySerializer.Serialize(second);
+        var bytesA = Serialize(first);
+        var bytesB = Serialize(second);
 
         Assert.Equal(bytesA, bytesB);
     }
@@ -155,7 +155,7 @@ public sealed class SerializerTests
     {
         var sample = new NoParameterlessCtorEnvelope { Name = "fail" };
 
-        var exception = Assert.Throws<InvalidOperationException>(() => CompactBinarySerializer.Serialize(sample));
+        var exception = Assert.Throws<InvalidOperationException>(() => Serialize(sample));
 
         Assert.Contains("A public parameterless constructor is required.", exception.Message);
     }
@@ -165,7 +165,7 @@ public sealed class SerializerTests
     {
         var sample = new UnsupportedCollectionEnvelope { Values = new List<int> { 1, 2, 3 } };
 
-        var exception = Assert.Throws<InvalidOperationException>(() => CompactBinarySerializer.Serialize(sample));
+        var exception = Assert.Throws<InvalidOperationException>(() => Serialize(sample));
 
         Assert.Contains("A public parameterless constructor is required.", exception.Message);
     }
@@ -174,10 +174,10 @@ public sealed class SerializerTests
     public void Deserialize_TruncatedPayload_ThrowsInvalidOperationException()
     {
         var sample = CreateSampleEnvelope();
-        var full = CompactBinarySerializer.Serialize(sample);
+        var full = Serialize(sample);
         var truncated = full[..^1];
 
-        var exception = Assert.Throws<InvalidOperationException>(() => CompactBinarySerializer.Deserialize<TestEnvelope>(truncated));
+        var exception = Assert.Throws<InvalidOperationException>(() => Deserialize<TestEnvelope>(truncated));
 
         Assert.Equal("Unexpected end of payload.", exception.Message);
     }
@@ -188,7 +188,7 @@ public sealed class SerializerTests
         var sample = CreateLargeRepresentativeEnvelope();
         var json = JsonSerializer.Serialize(sample);
         var jsonBytes = Encoding.UTF8.GetBytes(json);
-        var compactBytes = CompactBinarySerializer.Serialize(sample);
+        var compactBytes = Serialize(sample);
 
         Assert.True(compactBytes.Length < jsonBytes.Length, $"Expected compact payload to be smaller than JSON. Compact={compactBytes.Length}, JSON={jsonBytes.Length}");
     }
@@ -202,7 +202,7 @@ public sealed class SerializerTests
         var sw = Stopwatch.StartNew();
         for (var i = 0; i < iterations; i++)
         {
-            _ = CompactBinarySerializer.Serialize(sample);
+            _ = Serialize(sample);
         }
         sw.Stop();
 
@@ -213,13 +213,13 @@ public sealed class SerializerTests
     public void Deserialize_PerformanceSmoke_CompletesWithinReasonableTime()
     {
         var sample = CreateLargeRepresentativeEnvelope();
-        var bytes = CompactBinarySerializer.Serialize(sample);
+        var bytes = Serialize(sample);
         const int iterations = 5_000;
 
         var sw = Stopwatch.StartNew();
         for (var i = 0; i < iterations; i++)
         {
-            _ = CompactBinarySerializer.Deserialize<TestEnvelope>(bytes);
+            _ = Deserialize<TestEnvelope>(bytes);
         }
         sw.Stop();
 

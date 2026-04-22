@@ -1,6 +1,6 @@
-using CompactSerializer;
+using CompactBinarySerializer;
 
-namespace CompactSerializer.Demo;
+namespace CompactBinarySerializer.Demo;
 
 public enum SyncPriority
 {

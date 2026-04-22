@@ -1,13 +1,13 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactSerializer", "CompactSerializer\CompactSerializer.csproj", "{2E9B9CE1-B554-4F04-A1E9-B89FD623085A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactBinarySerializer", "CompactBinarySerializer\CompactBinarySerializer.csproj", "{2E9B9CE1-B554-4F04-A1E9-B89FD623085A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactSerializer.Demo", "CompactSerializer.Demo\CompactSerializer.Demo.csproj", "{E5D0A6DC-C866-430C-85F1-B5757372514C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactBinarySerializer.Demo", "CompactBinarySerializer.Demo\CompactBinarySerializer.Demo.csproj", "{E5D0A6DC-C866-430C-85F1-B5757372514C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactSerializer.Tests", "CompactSerializer.Tests\CompactSerializer.Tests.csproj", "{5B10B532-1214-4E23-A168-6A464E796CC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompactBinarySerializer.Tests", "CompactBinarySerializer.Tests\CompactBinarySerializer.Tests.csproj", "{5B10B532-1214-4E23-A168-6A464E796CC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

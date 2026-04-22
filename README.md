@@ -1,8 +1,8 @@
-# CompactSerializer
+# CompactBinarySerializer
 
-A small, schema-aware binary serializer for .NET. It trades JSON’s self-describing text for a compact layout: fixed field order, length-prefixed strings and byte arrays, and variable-length integer encoding where it helps. The result is typically smaller payloads and less parsing overhead than `System.Text.Json` for the same POCO graphs at the cost of a custom, non-human-readable format.
+A small, schema-aware binary serializer for .NET. It trades JSON's self-describing text for a compact layout: fixed field order, length-prefixed strings and byte arrays, and variable-length integer encoding where it helps. The result is typically smaller payloads and less parsing overhead than `System.Text.Json` for the same POCO graphs at the cost of a custom, non-human-readable format.
 
-The companion demo project compares payload size and rough serialize/deserialize throughput across CompactSerializer, `System.Text.Json`, and MessagePack on a large synthetic model.
+The companion demo project compares payload size and rough serialize/deserialize throughput across CompactBinarySerializer, `System.Text.Json`, and MessagePack on a large synthetic model.
 
 ## Requirements
 
@@ -12,17 +12,17 @@ The companion demo project compares payload size and rough serialize/deserialize
 
 | Path | Purpose |
 |------|---------|
-| `src/CompactSerializer/` | Library: `CompactBinarySerializer`, `SyncOrderAttribute`, readers/writers |
-| `src/CompactSerializer.Demo/` | Console app: sample models, benchmark vs JSON and MessagePack |
-| `src/CompactSerializer.Tests/` | xUnit test project: functional, error-path, payload-size, and performance-smoke coverage |
-| `src/CompactSerializer.sln` | Solution |
+| `src/CompactBinarySerializer/` | Library: `CompactBinarySerializer`, `SyncOrderAttribute`, readers/writers |
+| `src/CompactBinarySerializer.Demo/` | Console app: sample models, benchmark vs JSON and MessagePack |
+| `src/CompactBinarySerializer.Tests/` | xUnit test project: functional, error-path, payload-size, and performance-smoke coverage |
+| `src/CompactBinarySerializer.sln` | Solution |
 
 ## Quick start
 
-Add a project reference to `src/CompactSerializer/CompactSerializer.csproj`, then:
+Add a project reference to `src/CompactBinarySerializer/CompactBinarySerializer.csproj`, then:
 
 ```csharp
-using CompactSerializer;
+using CompactBinarySerializer;
 
 var bytes = CompactBinarySerializer.Serialize(myObject);
 var copy = CompactBinarySerializer.Deserialize<MyType>(bytes);
@@ -35,7 +35,7 @@ Root values passed to `Serialize` must not be null. For `Deserialize<T>`, the pa
 Property order: only public instance properties with both a getter and setter participate. Order is determined by `[SyncOrder(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
 
 ```csharp
-using CompactSerializer;
+using CompactBinarySerializer;
 
 public sealed class Example
 {
@@ -71,21 +71,21 @@ Types outside this set are not supported and will fail at runtime when encounter
 From the repository root:
 
 ```bash
-dotnet run --project src/CompactSerializer.Demo/CompactSerializer.Demo.csproj
+dotnet run --project src/CompactBinarySerializer.Demo/CompactBinarySerializer.Demo.csproj
 ```
 
-The demo prints JSON vs CompactSerializer vs MessagePack byte counts, checks CompactSerializer and MessagePack round-trips, then runs a simple multi-round benchmark for serialize/deserialize performance across all three serializers (not a substitute for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet), but useful for a quick sanity check).
+The demo prints JSON vs CompactBinarySerializer vs MessagePack byte counts, checks CompactBinarySerializer and MessagePack round-trips, then runs a simple multi-round benchmark for serialize/deserialize performance across all three serializers (not a substitute for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet), but useful for a quick sanity check).
 
 ## Building
 
 ```bash
-dotnet build src/CompactSerializer.sln
+dotnet build src/CompactBinarySerializer.sln
 ```
 
 ## Running tests
 
 ```bash
-dotnet test src/CompactSerializer.sln
+dotnet test src/CompactBinarySerializer.sln
 ```
 
 The test project includes broad serializer coverage:
@@ -95,6 +95,21 @@ The test project includes broad serializer coverage:
 - Contract behavior (`SyncOrder` ordering and constructor requirements)
 - Payload-size sanity check against JSON for a representative model
 - Performance smoke checks for serialize/deserialize loops
+
+## NuGet packaging
+
+Create NuGet package artifacts:
+
+```bash
+dotnet pack src/CompactBinarySerializer/CompactBinarySerializer.csproj -c Release -o artifacts
+```
+
+Publish to NuGet.org (replace with your API key):
+
+```bash
+dotnet nuget push artifacts/CompactBinarySerializer.1.0.0.nupkg --api-key <NUGET_API_KEY> --source https://api.nuget.org/v3/index.json
+dotnet nuget push artifacts/CompactBinarySerializer.1.0.0.snupkg --api-key <NUGET_API_KEY> --source https://api.nuget.org/v3/index.json
+```
 
 ## Limitations and stability
 

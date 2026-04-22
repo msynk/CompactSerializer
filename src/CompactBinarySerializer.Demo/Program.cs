@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using CompactSerializer;
-using CompactSerializer.Demo;
+using static CompactBinarySerializer.CompactBinarySerializer;
+using CompactBinarySerializer.Demo;
 using MessagePack;
 using MessagePack.Resolvers;
 
@@ -15,8 +15,8 @@ var messagePackOptions = MessagePackSerializerOptions.Standard.WithResolver(Cont
 
 var sample = SampleDataFactory.CreateLargeSample();
 
-var compactBytes = CompactBinarySerializer.Serialize(sample);
-var compactRoundTrip = CompactBinarySerializer.Deserialize<SyncEnvelope>(compactBytes);
+var compactBytes = Serialize(sample);
+var compactRoundTrip = Deserialize<SyncEnvelope>(compactBytes);
 
 var json = JsonSerializer.Serialize(sample, jsonOptions);
 var jsonBytes = Encoding.UTF8.GetBytes(json);
@@ -57,8 +57,8 @@ Console.WriteLine("Progress (running averages):");
 
 for (var run = 0; run < runs; run++)
 {
-    compactWriteRuns[run] = Time(() => { _ = CompactBinarySerializer.Serialize(sample); }, iterations);
-    compactReadRuns[run] = Time(() => { _ = CompactBinarySerializer.Deserialize<SyncEnvelope>(compactBytes); }, iterations);
+    compactWriteRuns[run] = Time(() => { _ = Serialize(sample); }, iterations);
+    compactReadRuns[run] = Time(() => { _ = Deserialize<SyncEnvelope>(compactBytes); }, iterations);
     jsonWriteRuns[run] = Time(() => { _ = JsonSerializer.SerializeToUtf8Bytes(sample); }, iterations);
     jsonReadRuns[run] = Time(() => { _ = JsonSerializer.Deserialize<SyncEnvelope>(jsonBytes, jsonOptions)!; }, iterations);
     messagePackWriteRuns[run] = Time(() => { _ = MessagePackSerializer.Serialize(sample, messagePackOptions); }, iterations);

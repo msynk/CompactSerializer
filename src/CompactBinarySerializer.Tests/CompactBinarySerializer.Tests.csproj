@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CompactSerializer\CompactSerializer.csproj" />
+    <ProjectReference Include="..\CompactBinarySerializer\CompactBinarySerializer.csproj" />
   </ItemGroup>
 
 </Project>
