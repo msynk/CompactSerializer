@@ -19,13 +19,13 @@ dotnet add package CompactBinarySerializer
 Or via the NuGet Package Manager in Visual Studio, or by adding directly to your `.csproj`:
 
 ```xml
-<PackageReference Include="CompactBinarySerializer" Version="0.1.0" />
+<PackageReference Include="CompactBinarySerializer" Version="0.2.0" />
 ```
 
 ## Quick start
 
 ```csharp
-using static CompactBinarySerializer.CompactBinarySerializer;
+using static CompactBinarySerializer.CbSerializer;
 
 var bytes = Serialize(myObject);
 var copy = Deserialize<MyType>(bytes);
@@ -35,17 +35,17 @@ Root values passed to `Serialize` must not be null. For `Deserialize<T>`, the pa
 
 ## Modeling rules
 
-Property order: only public instance properties with both a getter and setter participate. Order is determined by `[CompactIndex(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
+Property order: only public instance properties with both a getter and setter participate. Order is determined by `[CbIndex(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
 
 ```csharp
 using CompactBinarySerializer;
 
 public sealed class Example
 {
-    [CompactIndex(0)]
+    [CbIndex(0)]
     public int Id { get; set; }
 
-    [CompactIndex(1)]
+    [CbIndex(1)]
     public string Name { get; set; } = string.Empty;
 }
 ```
@@ -104,7 +104,7 @@ The test project includes:
 
 - Round-trip correctness for primitives, nested objects, arrays, and lists
 - Nullability and guardrail behavior (null roots, empty/truncated payloads)
-- Contract behavior (`CompactIndex` ordering and constructor requirements)
+- Contract behavior (`CbIndex` ordering and constructor requirements)
 - Payload-size sanity check against JSON for a representative model
 - Performance smoke checks for serialize/deserialize loops
 

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using static CompactBinarySerializer.CompactBinarySerializer;
+using static CompactBinarySerializer.CbSerializer;
 using CompactBinarySerializer.Demo;
 using MessagePack;
 using MessagePack.Resolvers;

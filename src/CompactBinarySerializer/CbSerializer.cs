@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace CompactBinarySerializer;
 
-public static class CompactBinarySerializer
+public static class CbSerializer
 {
     private static readonly ConcurrentDictionary<Type, TypeContract> TypeContracts = new();
 
@@ -375,7 +375,7 @@ public static class CompactBinarySerializer
             .Select(p => new
             {
                 Property = p,
-                Order = p.GetCustomAttribute<CompactIndexAttribute>()?.Index,
+                Order = p.GetCustomAttribute<CbIndexAttribute>()?.Index,
                 MetadataToken = p.MetadataToken
             })
             .OrderBy(p => p.Order ?? int.MaxValue)
