@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompactBinarySerializer;
 
@@ -15,6 +18,21 @@ public static class CbSerializer
 
         var writer = new CompactWriter();
         WriteValue(writer, typeof(T), value);
+        return writer.ToArray();
+    }
+
+    public static byte[] Serialize(object value, Type runtimeType)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(runtimeType);
+
+        if (!runtimeType.IsInstanceOfType(value))
+        {
+            throw new ArgumentException("Value is not an instance of runtimeType.", nameof(value));
+        }
+
+        var writer = new CompactWriter();
+        WriteValue(writer, runtimeType, value);
         return writer.ToArray();
     }
 
@@ -33,6 +51,59 @@ public static class CbSerializer
         }
 
         return value;
+    }
+
+    public static object Deserialize(ReadOnlySpan<byte> payload, Type runtimeType)
+    {
+        ArgumentNullException.ThrowIfNull(runtimeType);
+
+        if (payload.IsEmpty)
+        {
+            throw new ArgumentException("Payload cannot be empty.", nameof(payload));
+        }
+
+        var reader = new CompactReader(payload);
+        var value = ReadValue(reader, runtimeType);
+        if (value is null)
+        {
+            throw new InvalidOperationException("Deserialization produced null for a non-nullable root type.");
+        }
+
+        return value;
+    }
+
+    public static async Task<T> DeserializeAsync<T>(Stream stream, CancellationToken? cancellationToken = null)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        var payload = await ReadStreamToArrayAsync(stream, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+        if (payload.Length == 0)
+        {
+            throw new ArgumentException("Payload cannot be empty.", nameof(stream));
+        }
+
+        return Deserialize<T>(payload);
+    }
+
+    public static async Task<object> DeserializeAsync(Stream stream, Type runtimeType, CancellationToken? cancellationToken = null)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(runtimeType);
+
+        var payload = await ReadStreamToArrayAsync(stream, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+        if (payload.Length == 0)
+        {
+            throw new ArgumentException("Payload cannot be empty.", nameof(stream));
+        }
+
+        return Deserialize(payload, runtimeType);
+    }
+
+    private static async Task<byte[]> ReadStreamToArrayAsync(Stream stream, CancellationToken cancellationToken)
+    {
+        using var memory = new MemoryStream();
+        await stream.CopyToAsync(memory, cancellationToken).ConfigureAwait(false);
+        return memory.ToArray();
     }
 
     private static void WriteValue(CompactWriter writer, Type type, object? value)

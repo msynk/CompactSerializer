@@ -37,6 +37,85 @@ public sealed class SerializerTests
     }
 
     [Fact]
+    public void Serialize_ObjectWithRuntimeType_RoundTrips_AsRuntimeLayout()
+    {
+        BaseModel value = new DerivedModel { BaseField = 1, DerivedField = "extra" };
+        var bytes = Serialize(value, typeof(BaseModel));
+        var restored = Deserialize<BaseModel>(bytes);
+
+        Assert.Equal(1, restored.BaseField);
+        Assert.IsNotType<DerivedModel>(restored);
+    }
+
+    [Fact]
+    public void Serialize_ObjectWithRuntimeType_MismatchedInstance_ThrowsArgumentException()
+    {
+        object value = new DerivedModel { BaseField = 1, DerivedField = "x" };
+
+        var exception = Assert.Throws<ArgumentException>(() => Serialize(value, typeof(UnrelatedModel)));
+
+        Assert.Equal("value", exception.ParamName);
+    }
+
+    [Fact]
+    public void Deserialize_WithRuntimeType_RoundTrips()
+    {
+        var sample = CreateSampleEnvelope();
+        var bytes = Serialize(sample);
+
+        var restored = Deserialize(bytes, typeof(TestEnvelope));
+
+        Assert.IsType<TestEnvelope>(restored);
+        AssertEqual(sample, (TestEnvelope)restored);
+    }
+
+    [Fact]
+    public void Deserialize_WithRuntimeType_NullType_ThrowsArgumentNullException()
+    {
+        var bytes = Serialize(CreateSampleEnvelope());
+
+        var exception = Assert.Throws<ArgumentNullException>(() => Deserialize(bytes, null!));
+
+        Assert.Equal("runtimeType", exception.ParamName);
+    }
+
+    [Fact]
+    public async Task DeserializeAsync_FromStream_RoundTrips()
+    {
+        var sample = CreateSampleEnvelope();
+        var bytes = Serialize(sample);
+        await using var stream = new System.IO.MemoryStream(bytes);
+
+        var restored = await DeserializeAsync<TestEnvelope>(stream);
+
+        AssertEqual(sample, restored);
+    }
+
+    [Fact]
+    public async Task DeserializeAsync_WithRuntimeType_RoundTrips()
+    {
+        var sample = CreateSampleEnvelope();
+        var bytes = Serialize(sample);
+        await using var stream = new System.IO.MemoryStream(bytes);
+
+        var restored = await DeserializeAsync(stream, typeof(TestEnvelope));
+
+        Assert.IsType<TestEnvelope>(restored);
+        AssertEqual(sample, (TestEnvelope)restored);
+    }
+
+    [Fact]
+    public async Task DeserializeAsync_EmptyStream_ThrowsArgumentException()
+    {
+        await using var stream = new System.IO.MemoryStream();
+
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => DeserializeAsync(stream, typeof(TestEnvelope)));
+
+        Assert.Equal("stream", exception.ParamName);
+    }
+
+    [Fact]
     public void Deserialize_EmptyPayload_ThrowsArgumentException()
     {
         var exception = Assert.Throws<ArgumentException>(() => Deserialize<TestEnvelope>([]));
@@ -392,5 +471,23 @@ public sealed class SerializerTests
     {
         [CbIndex(0)]
         public IEnumerable<int> Values { get; set; } = [];
+    }
+
+    private class BaseModel
+    {
+        [CbIndex(0)]
+        public int BaseField { get; set; }
+    }
+
+    private sealed class DerivedModel : BaseModel
+    {
+        [CbIndex(1)]
+        public string DerivedField { get; set; } = string.Empty;
+    }
+
+    private sealed class UnrelatedModel
+    {
+        [CbIndex(0)]
+        public int Id { get; set; }
     }
 }
