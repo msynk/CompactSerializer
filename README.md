@@ -35,7 +35,7 @@ Root values passed to `Serialize` must not be null. For `Deserialize<T>`, the pa
 
 ## Modeling rules
 
-Property order: only public instance properties with both a getter and setter participate. Order is determined by `[CbIndex(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every property you care about for forward-compatible layouts.
+Property order: only public instance properties with both a getter and setter participate, except properties marked with `[CbIgnore]` (those are omitted from the payload). Order is determined by `[CbIndex(n)]` ascending; properties without the attribute are serialized after attributed ones, in metadata token order (stable for a given build, not a long-term compatibility contract). Annotate every serialized property you care about for forward-compatible layouts.
 
 ```csharp
 using CompactBinarySerializer;
@@ -47,6 +47,19 @@ public sealed class Example
 
     [CbIndex(1)]
     public string Name { get; set; } = string.Empty;
+}
+```
+
+**Excluding properties (`CbIgnore`):** apply `[CbIgnore]` to skip a property on the wire. It is neither written during serialize nor consumed during deserialize; after `Deserialize`, that property keeps the default for its type (for example `null` for reference types, `0` for `int`). Adding or removing `[CbIgnore]` changes the field sequence the same way as adding or removing a member, so both ends must agree.
+
+```csharp
+public sealed class Example
+{
+    [CbIndex(0)]
+    public int Id { get; set; }
+
+    [CbIgnore]
+    public string? Ephemeral { get; set; }
 }
 ```
 
@@ -71,7 +84,7 @@ Types outside this set are not supported and will fail at runtime when encounter
 
 ## Limitations and stability
 
-- Format versioning is not built in; changing property order, types, or serializer behavior breaks interoperability with old payloads.
+- Format versioning is not built in; changing property order, types, inclusion of `[CbIgnore]`, or serializer behavior breaks interoperability with old payloads.
 - Security: this is not a hardened interchange format. Do not deserialize untrusted data without threat modeling (no built-in schema or type IDs in the stream).
 - Scope: intentionally narrow, good for internal services or caches where you control both ends and want smaller/faster serialization than JSON for compatible models.
 
@@ -104,7 +117,7 @@ The test project includes:
 
 - Round-trip correctness for primitives, nested objects, arrays, and lists
 - Nullability and guardrail behavior (null roots, empty/truncated payloads)
-- Contract behavior (`CbIndex` ordering and constructor requirements)
+- Contract behavior (`CbIndex` ordering, `CbIgnore`, and constructor requirements)
 - Payload-size sanity check against JSON for a representative model
 - Performance smoke checks for serialize/deserialize loops
 

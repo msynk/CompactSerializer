@@ -442,6 +442,7 @@ public static class CbSerializer
     private static TypeContract BuildTypeContract(Type type)
     {
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.GetCustomAttribute<CbIgnoreAttribute>() is null)
             .Where(p => p.CanRead && p.CanWrite && p.GetMethod is not null && p.SetMethod is not null)
             .Select(p => new
             {

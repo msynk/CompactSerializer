@@ -218,6 +218,34 @@ public sealed class SerializerTests
     }
 
     [Fact]
+    public void SerializeAndDeserialize_CbIgnore_ExcludesPropertyFromWire()
+    {
+        var sample = new ModelWithIgnoredProperty
+        {
+            Included = 42,
+            Ignored = "should-not-round-trip"
+        };
+
+        var bytes = Serialize(sample);
+        var restored = Deserialize<ModelWithIgnoredProperty>(bytes);
+
+        Assert.Equal(42, restored.Included);
+        Assert.Null(restored.Ignored);
+    }
+
+    [Fact]
+    public void Serialize_CbIgnore_ProducesSmallerPayloadThanIfSerialized()
+    {
+        var withIgnore = new ModelWithIgnoredProperty { Included = 1, Ignored = new string('x', 100) };
+        var equivalent = new ModelWithoutIgnoredProperty { Included = 1 };
+
+        var bytesWithIgnore = Serialize(withIgnore);
+        var bytesEquivalent = Serialize(equivalent);
+
+        Assert.Equal(bytesEquivalent, bytesWithIgnore);
+    }
+
+    [Fact]
     public void Serialize_UsesSyncOrder_IrrespectiveOfDeclarationOrder()
     {
         var first = new OrderedShapeA { Name = "alpha", Count = 33 };
@@ -432,6 +460,21 @@ public sealed class SerializerTests
 
         [CbIndex(1)]
         public TestChild[] ChildArray { get; set; } = [];
+    }
+
+    private sealed class ModelWithIgnoredProperty
+    {
+        [CbIndex(0)]
+        public int Included { get; set; }
+
+        [CbIgnore]
+        public string? Ignored { get; set; }
+    }
+
+    private sealed class ModelWithoutIgnoredProperty
+    {
+        [CbIndex(0)]
+        public int Included { get; set; }
     }
 
     private sealed class OrderedShapeA
