@@ -19,7 +19,7 @@ dotnet add package CompactBinarySerializer
 Or via the NuGet Package Manager in Visual Studio, or by adding directly to your `.csproj`:
 
 ```xml
-<PackageReference Include="CompactBinarySerializer" Version="0.2.0" />
+<PackageReference Include="CompactBinarySerializer" Version="0.3.0" />
 ```
 
 ## Quick start
