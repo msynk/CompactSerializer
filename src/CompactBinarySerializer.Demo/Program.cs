@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using static CompactBinarySerializer.CbSerializer;
@@ -31,6 +32,21 @@ Console.WriteLine($"Compact bytes: {compactBytes.Length}");
 Console.WriteLine($"MsgPack bytes: {messagePackBytes.Length}");
 Console.WriteLine($"Compact vs JSON reduction:   {ComputeReduction(jsonBytes.Length, compactBytes.Length):F2}%");
 Console.WriteLine($"MsgPack vs JSON reduction:   {ComputeReduction(jsonBytes.Length, messagePackBytes.Length):F2}%");
+Console.WriteLine();
+Console.WriteLine("Payload size (bytes; serialized wire then gzip / deflate / brotli, CompressionLevel.Optimal):");
+Console.WriteLine($"  wire:    JSON {jsonBytes.Length,7}  Compact {compactBytes.Length,7}  MsgPack {messagePackBytes.Length,7}");
+var jsonGzip = CompressGZip(jsonBytes);
+var compactGzip = CompressGZip(compactBytes);
+var messagePackGzip = CompressGZip(messagePackBytes);
+Console.WriteLine($"  gzip:    JSON {jsonGzip,7}  Compact {compactGzip,7}  MsgPack {messagePackGzip,7}");
+var jsonDeflate = CompressDeflate(jsonBytes);
+var compactDeflate = CompressDeflate(compactBytes);
+var messagePackDeflate = CompressDeflate(messagePackBytes);
+Console.WriteLine($"  deflate: JSON {jsonDeflate,7}  Compact {compactDeflate,7}  MsgPack {messagePackDeflate,7}");
+var jsonBrotli = CompressBrotli(jsonBytes);
+var compactBrotli = CompressBrotli(compactBytes);
+var messagePackBrotli = CompressBrotli(messagePackBytes);
+Console.WriteLine($"  brotli:  JSON {jsonBrotli,7}  Compact {compactBrotli,7}  MsgPack {messagePackBrotli,7}");
 Console.WriteLine();
 Console.WriteLine($"Roundtrip valid: {IsEquivalent(sample, compactRoundTrip)}");
 Console.WriteLine($"MsgPack roundtrip valid: {IsEquivalent(sample, messagePackRoundTrip)}");
@@ -105,6 +121,39 @@ double ComputeReduction(int baseline, int candidate)
     }
 
     return (baseline - candidate) * 100.0 / baseline;
+}
+
+static int CompressGZip(byte[] input)
+{
+    using var output = new MemoryStream();
+    using (var gzip = new GZipStream(output, CompressionLevel.Optimal, leaveOpen: true))
+    {
+        gzip.Write(input);
+    }
+
+    return (int)output.Length;
+}
+
+static int CompressDeflate(byte[] input)
+{
+    using var output = new MemoryStream();
+    using (var deflate = new DeflateStream(output, CompressionLevel.Optimal, leaveOpen: true))
+    {
+        deflate.Write(input);
+    }
+
+    return (int)output.Length;
+}
+
+static int CompressBrotli(byte[] input)
+{
+    using var output = new MemoryStream();
+    using (var brotli = new BrotliStream(output, CompressionMode.Compress, leaveOpen: true))
+    {
+        brotli.Write(input);
+    }
+
+    return (int)output.Length;
 }
 
 long Time(Action action, int iterations)
