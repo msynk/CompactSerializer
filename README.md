@@ -127,7 +127,34 @@ The test project includes:
 dotnet run --project src/CompactBinarySerializer.Demo/CompactBinarySerializer.Demo.csproj
 ```
 
-The demo prints byte counts and runs a multi-round benchmark comparing CompactBinarySerializer, `System.Text.Json`, and MessagePack.
+The demo prints byte counts (including gzip, deflate, and brotli sizes for each wire format) and runs a multi-round benchmark comparing CompactBinarySerializer, `System.Text.Json`, and MessagePack.
+
+### Demo payload comparison
+
+The demo serializes `SyncEnvelope` built by `SampleDataFactory.CreateLargeSample()` with:
+
+- **Compact** — this library  
+- **JSON** — `System.Text.Json` (default naming; property names preserved)  
+- **MessagePack** — `MessagePackSerializer` with `ContractlessStandardResolver`
+
+Uncompressed sizes and reduction versus JSON (baseline):
+
+| Format  | Wire size (bytes) | vs JSON |
+|---------|------------------:|--------:|
+| JSON    | 57,394            | —       |
+| Compact | 18,753            | −67.3%  |
+| MsgPack | 40,190            | −30.0%  |
+
+Compressed payload sizes use `CompressionLevel.Optimal` via `GZipStream`, `DeflateStream`, and `BrotliStream` on each serializer’s byte output:
+
+| Encoding | JSON  | Compact | MsgPack |
+|----------|------:|--------:|--------:|
+| Wire     | 57,394 | 18,753 | 40,190 |
+| gzip     | 5,952 | 5,879 | 5,688 |
+| deflate  | 5,934 | 5,861 | 5,670 |
+| brotli   | 4,056 | 4,860 | 4,446 |
+
+Exact wire and compressed sizes can shift slightly from run to run (for example `Guid` and `DateTime.UtcNow` in the sample). Re-run the demo locally for current numbers.
 
 ## License
 
